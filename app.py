@@ -24,13 +24,11 @@ with col2:
     p_re = st.number_input("Parent Retained Earnings at Reporting Date (£)", value=200000, step=1000)
 
 if st.button("Generate Consolidation Results"):
-    # Underlying Logic
     pap = na_reporting - na_acq
     gw = (cost_inv + nci_fv_acq) - na_acq
     nci_closing = nci_fv_acq + (0.20 * pap)
     gre = p_re + (0.80 * pap)
 
-    # 2. The 5 Workings
     st.subheader("2. The 5 Workings")
     workings = pd.DataFrame({
         "Working": ["W1: Group Structure", "W2: Post-Acq Profit", "W3: Goodwill", "W4: Closing NCI", "W5: Group RE"],
@@ -39,33 +37,34 @@ if st.button("Generate Consolidation Results"):
     })
     st.table(workings)
 
-    # 3. Required Outputs
     st.subheader("3. Required Output: Consolidated Statement of Financial Position (Extract)")
-    
-    p_assets = 500000
-    s_assets = 200000
-    
     outputs = pd.DataFrame({
         "Item": ["Non-Current Assets: Goodwill", "Non-Current Assets: PPE (P+S)", "Equity: Group RE", "Equity: NCI"],
         "Source": ["W3", "P + S", "W5", "W4"],
-        "Total (£)": [format_currency(gw), format_currency(p_assets + s_assets), format_currency(gre), format_currency(nci_closing)]
+        "Total (£)": [format_currency(gw), "700,000", format_currency(gre), format_currency(nci_closing)]
     })
     st.table(outputs)
 
 st.divider()
 
-st.subheader("4. Advanced Considerations (ACCA Standards)")
+st.subheader("4. Advanced Considerations & Common Errors")
 
-st.write("In complex consolidations, the '5 Workings' are adjusted for the following:")
+st.write("Beyond the 5 Workings, be aware of these common pitfalls and technical requirements:")
 
-with st.expander("Inter-group Trading & Unrealized Profit (PUP)"):
+with st.expander("Common Errors in Exams"):
     st.write("""
-    **Inter-group Trading:** All intra-group sales and purchases must be eliminated in full.
-    **Unrealized Profit (PUP):** If the group has unsold inventory from inter-group sales at the reporting date, the profit element must be eliminated from the seller's retained earnings.
+    1. **Double Counting:** Attempting to add the Parent's investment in the subsidiary to the assets (Investment must be eliminated).
+    2. **Time Apportionment:** Failing to pro-rate subsidiary profits when the acquisition occurs mid-year.
+    3. **NCI Share:** Forgetting to apply the NCI % to the *post-acquisition* profit (W4).
+    4. **PUP Omission:** Forgetting to deduct Unrealized Profit from the *seller's* retained earnings.
+    5. **Goodwill Impairment:** Failing to charge impairment to Group Retained Earnings (W5).
     """)
 
+with st.expander("Inter-group Trading & Unrealized Profit (PUP)"):
+    st.write("All intra-group sales/purchases must be eliminated. PUP must be deducted from the seller's retained earnings.")
+
 with st.expander("Fair Value Adjustments & Depreciation"):
-    st.write("Subsidiary assets are measured at fair value at acquisition; any surplus is depreciated against post-acquisition profits.")
+    st.write("Adjust assets to fair value at acquisition; any surplus must be depreciated against post-acquisition profits.")
 
 with st.expander("Impairment of Goodwill"):
     st.write("Goodwill must be tested annually; impairment losses reduce both Group Retained Earnings (W5) and Goodwill (W3).")
